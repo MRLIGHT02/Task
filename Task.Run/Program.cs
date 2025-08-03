@@ -8,7 +8,8 @@ class UpCounter {
         Console.WriteLine("Counting up Started:");
         for (int i = 0; i < count; i++)
         {
-            Console.Write($"i : {i + 1}");
+            Console.Write($"i : {i}");
+             // Simulating some work with a delay
         }
         Console.WriteLine("Counting up Finished");
     }
@@ -41,11 +42,11 @@ class Program
         long TimeTakenByTask = stopwatch.ElapsedMilliseconds;
         Console.WriteLine($"Time taken by Task: {TimeTakenByTask} ms");
         Console.WriteLine("--------------------------------------------------");
-        stopwatch.Restart();
-        WithThreads();
-        stopwatch.Stop();
-        long TimeTakenByThread = stopwatch.ElapsedMilliseconds;
-        Console.WriteLine($"Time taken by Thread: {TimeTakenByThread} ms");
+    //    stopwatch.Restart();
+    ////        WithThreads();
+    //    stopwatch.Stop();
+    //    long TimeTakenByThread = stopwatch.ElapsedMilliseconds;
+    //    Console.WriteLine($"Time taken by Thread: {TimeTakenByThread} ms");
 
         //long trillion = 1000000000000;
         //long differ = 0;
@@ -58,7 +59,7 @@ class Program
         //long TimeTakenByWhileLoop = stopwatch.ElapsedMilliseconds;
         //Console.WriteLine($"Time taken by While Loop: {TimeTakenByWhileLoop} ms");
 
-
+        Console.WriteLine("End Of Main Thread");
     }
 
     static void WithTask()
@@ -67,47 +68,61 @@ class Program
 
         UpCounter upCounter = new UpCounter();
         DownCounter downCounter = new DownCounter();
-        CountdownEvent countdownEvent = new CountdownEvent(2);
+       
 
         // create and start the tasks
 
         Task Task1 = Task.Factory.StartNew(() =>
         {
             upCounter.CountUp(100);
-            countdownEvent.Signal();
+      
+        });
+
+        Task continouetaskfirst = Task1.ContinueWith((antecedent) =>
+        {
+            Console.WriteLine("Task one result");
+            
         });
         Task Task2 = Task.Factory.StartNew(() => {
 
             downCounter.CountDown(100);
-            countdownEvent.Signal();
+            
+        });
+        Task continouetasktwo = Task2.ContinueWith((antecedent) =>
+        {
+            Console.WriteLine("task 2 result");
         });
 
-        countdownEvent.Wait();
+        //Task.WaitAll(Task1, Task2);
+       // Console.WriteLine($"Task {completed} completed first.");
+        
+        Console.WriteLine("--------------------------------------------------");
+
     }
 
-    static void WithThreads()
-    {
-        // Creating Object For Both Classes
+    //static void WithThreads()
+    //{
+    //    // Creating Object For Both Classes
 
-        UpCounter upCounter = new UpCounter();
-        DownCounter downCounter = new DownCounter();
-        CountdownEvent countdownEvent = new CountdownEvent(2);
+    //    UpCounter upCounter = new UpCounter();
+    //    DownCounter downCounter = new DownCounter();
+    //    CountdownEvent countdownEvent = new CountdownEvent(2);
 
-        Thread thread1 = new Thread(() =>
-        {
-            upCounter.CountUp(100);
-            countdownEvent.Signal();
-        });
+    //    Thread thread1 = new Thread(() =>
+    //    {
+    //        upCounter.CountUp(100);
+    //        countdownEvent.Signal();
+    //    });
 
-        Thread thread2 = new Thread(() =>
-        {
-            downCounter.CountDown(100);
-            countdownEvent.Signal();
-        });
+    //    Thread thread2 = new Thread(() =>
+    //    {
+    //        downCounter.CountDown(100);
+    //        countdownEvent.Signal();
+    //    });
 
-        thread1.Start();
-        thread2.Start();
+    //    thread1.Start();
+    //    thread2.Start();
 
-        countdownEvent.Wait();
-    }
+    //    countdownEvent.Wait();
+    //}
 }
