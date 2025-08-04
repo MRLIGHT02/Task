@@ -5,7 +5,7 @@
 
 
 
-string path = @"C:\Users\saif ali\sample.txt";
+string path = @"C:\Users\saif ali\Desktop\sample.txt";
 
 
 string content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc tincidunt risus et risus feugiat, sagittis congue nisl varius. Cras egestas nec orci sed iaculis. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc scelerisque augue eu justo elementum, sit amet imperdiet arcu euismod. Praesent ultricies suscipit suscipit. Praesent eu augue faucibus, interdum arcu imperdiet, molestie tortor. Nunc semper faucibus velit, vel cursus augue lobortis a. In in vehicula felis, et rhoncus risus. Proin et nulla at velit facilisis sagittis et ornare justo. Morbi non ipsum tristique, euismod nisl quis, sollicitudin sapien. Proin sit amet metus lobortis nulla condimentum rutrum." +
@@ -13,19 +13,29 @@ string content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc 
 
 FileWriterExample fileWriter = new FileWriterExample();
 Task write= fileWriter.WriteFile(path, content);
-write.Wait();
+
+Console.WriteLine("File written successfully!");
 FileReaderExample fileReader = new FileReaderExample();
-Task read = fileReader.ReadFile(path);
-read.Wait();
+Task<string> read = fileReader.ReadFile(path);
+
+Console.WriteLine("File read successfully!");
+
+Console.WriteLine($"{read.Result}");
+
+
+
+
+
 class FileWriterExample { 
 
-    public Task WriteFile(string path, string content)
+    public async Task WriteFile(string path, string content)
     {
        StreamWriter writer = new(path);
         Task writetask = writer.WriteLineAsync(content);
-        writer.FlushAsync();
-        return writetask;
+        writer.Flush();
         writer.Close();
+        await writetask;
+
     }
 
 
@@ -33,13 +43,15 @@ class FileWriterExample {
 }
 class FileReaderExample
 {
-    public Task ReadFile(string path)
+    public async Task<string> ReadFile(string path)
     {
-        using StreamReader Reader = new(path);
-        Task read = Reader.ReadToEndAsync();
+        StreamReader Reader = new(path);
+        Task<string> read = Reader.ReadToEndAsync();
 
         Reader.Close();
-        return read;
+        string content = await read;
+        return content;
     }
 
 }
+
